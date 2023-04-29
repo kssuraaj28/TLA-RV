@@ -4,13 +4,13 @@ EXTENDS Naturals, Sequences, TLC
 CONSTANTS external_map \* A sequence of sequences
 VARIABLES trace_id, step_num, refinement_map
 
-IsFiniteSeq(x) == \E n \in Nat: DOMAIN x = {1..n}
+IsFiniteSeq(x) == DOMAIN x = 1..Len(x)
 
 \* A finite number of traces
 ASSUME IsFiniteSeq(external_map) 
 
-\* Each trace has a finite number of states TODO -- Test this
-ASSUME \A trace_idx \in DOMAIN external_map: 
+\* TODO: Change from instace to EXTENDS....
+ASSUME \A trace_idx \in DOMAIN external_map:  
             IsFiniteSeq(external_map[trace_idx])
 
 TraceLength(trace_idx) == Len(external_map[trace_idx])

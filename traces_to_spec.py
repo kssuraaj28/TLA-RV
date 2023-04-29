@@ -63,12 +63,12 @@ class spec_gen:
         harness_module='Harness'
 
         tla_text = f'''----------------- MODULE {modulename} ----------------
-VARIABLES trace_id, step_num, refinement_map
+EXTENDS {harness_module} 
 trace_collection == {traces_tla}
-INSTANCE {harness_module} WITH external_map <- trace_collection
 =========================================================
 '''
-        cfg_text = f'''
+        cfg_text = f'''CONSTANTS
+\texternal_map <- trace_collection
 INIT Init
 NEXT Next
 '''
