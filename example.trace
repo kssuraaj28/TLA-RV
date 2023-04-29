@@ -1,0 +1,5 @@
+#Example trace -- Lines starting with # are ignored
+2, 3
+3, 2
+6, 3
+2, 3
