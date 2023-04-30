@@ -58,19 +58,24 @@ class spec_gen:
         ret = ',\n'.join(self.trace_to_tla_seq(x) for x in self.trace_list)
         return '<<\n' + ret + '\n>>'
 
-    def write_tla_module(self,modulename):
+    def write_tla_module(self,modulename,specname):
         traces_tla = self.traces_to_tla_collection()
         harness_module='Harness'
 
         tla_text = f'''----------------- MODULE {modulename} ----------------
 EXTENDS {harness_module} 
+Original == INSTANCE {specname} WITH state <- refinement_map
+
 trace_collection == {traces_tla}
+RefinementSpec == Original!Spec
 =========================================================
 '''
         cfg_text = f'''CONSTANTS
 \texternal_map <- trace_collection
 INIT Init
 NEXT Next
+CHECK_DEADLOCK FALSE
+PROPERTY RefinementSpec
 '''
         with open(f'{modulename}.tla', 'w') as ofd:
             ofd.write(tla_text)
@@ -85,7 +90,7 @@ def main():
     spec_generator = spec_gen(input_refinement_config)
     for trace in input_trace_files:
         spec_generator.add_trace_file(trace)
-    spec_generator.write_tla_module('Example')
+    spec_generator.write_tla_module('Example','ExampleSpec')
 
 
 if __name__ == '__main__':

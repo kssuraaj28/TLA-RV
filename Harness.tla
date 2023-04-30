@@ -1,5 +1,5 @@
 ---------------------------- MODULE Harness -------------------------------
-EXTENDS Naturals, Sequences, TLC
+EXTENDS Naturals, Sequences
 
 CONSTANTS external_map \* A sequence of sequences
 VARIABLES trace_id, step_num, refinement_map
