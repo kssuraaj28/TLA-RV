@@ -21,11 +21,7 @@ for i in {1..10} ; do
     echo "Collected trace $i"
 done
 
-rm -rf Harness.tla
-ln -s ../Harness.tla  .
-
 echo "Creating trace collection model"
 ../traces_to_spec.py GCD tracemodel "$rfnment_vars" traces/*
 
-source ~/repos/chain-replication/source.sh
-tlc tracemodel
+../modelcheck.sh tracemodel
