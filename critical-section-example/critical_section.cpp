@@ -41,6 +41,7 @@ void critical_section(int thread_id) {
 }
 
 int main() {
+  update_refinement(0, 0);
   std::thread t1(critical_section, 1);
   std::thread t2(critical_section, 2);
 
