@@ -14,6 +14,8 @@ struct Instrumentor : public FunctionPass {
   virtual bool runOnFunction(Function &F) {
 
     LLVMContext &Ctx = F.getContext();
+    FunctionCallee logBegin = F.getParent()->getOrInsertFunction(
+        "begin_next_state", Type::getVoidTy(Ctx));
     FunctionCallee logPart = F.getParent()->getOrInsertFunction(
         "log_into_state", Type::getVoidTy(Ctx), Type::getInt32Ty(Ctx));
     FunctionCallee logNext = F.getParent()->getOrInsertFunction(
@@ -34,6 +36,7 @@ struct Instrumentor : public FunctionPass {
     //   errs() << *arg << "\n";
     // }
 
+    builder.CreateCall(logBegin);
     for (auto &A : F.args()) {
       auto *ci = dyn_cast<Value>(&A);
       errs() << ci;
