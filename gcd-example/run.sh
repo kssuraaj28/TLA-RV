@@ -8,17 +8,16 @@ RANDOM=$(date +%s)
 gcc GCD.c -o GCD -g
 
 
-rfnment_vars=$(awk -F '--' '/state/ {print $NF ;exit}' GCD.tla)
-
 rm -rf traces
 mkdir traces
 
+instr_cmd=../gdb-instrument/run.sh
 
 for i in {1..10} ; do
     x=$(($RANDOM+1))
     y=$(($RANDOM%x+1))
     x=$((x+1))
-    gdb --command=gdb-instrumentation --args GCD $x $y | grep ~~ | sed s/~//g  > traces/trace_$i
+    rfnment_vars=$($instr_cmd GCD.tla "traces/trace_$i" GCD $x $y)
     echo "Collected trace $i"
 done
 

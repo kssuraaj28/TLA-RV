@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from sys import argv
 
+
 class spec_gen:
     def __init__(self, refinement_cfg_str):
         self.refinement_vars = []
@@ -9,7 +10,7 @@ class spec_gen:
         for var_type in refinement_cfg_str.split(','):
             var, type_str = [x.strip() for x in var_type.split(':')]
             type_map = {'int': int, 'str': str}  # Can be extended
-            assert(var not in self.refinement_vars)
+            assert (var not in self.refinement_vars)
             self.refinement_vars.append(var)
             assert (type_str in type_map)
             self.rfnmnt_vars_types[var] = type_map[type_str]
@@ -54,20 +55,43 @@ class spec_gen:
         ret = ',\n'.join(self.trace_to_tla_seq(x) for x in self.trace_list)
         return '<<\n' + ret + '\n>>'
 
-    def write_tla_module(self,modulename,specname):
+    def write_tla_module(self, modulename, specname):
         traces_tla = self.traces_to_tla_collection()
-        harness_module='Harness'
 
         tla_text = f'''----------------- MODULE {modulename} ----------------
-EXTENDS {harness_module} 
+EXTENDS Naturals, Sequences
+
+external_map  == {traces_tla}
+VARIABLES trace_id, step_num, refinement_map
+
+IsFiniteSeq(x) == DOMAIN x = 1..Len(x)
+
+ASSUME IsFiniteSeq(external_map) 
+
+ASSUME \\A trace_idx \\in DOMAIN external_map:  
+            IsFiniteSeq(external_map[trace_idx])
+
+TraceLength(trace_idx) == Len(external_map[trace_idx])
+
+NextInTrace(trace_idx) == 
+                   /\\ trace_id = trace_idx
+                   /\\ step_num < TraceLength(trace_idx)
+                   /\\ step_num' = step_num+1
+                   /\\ UNCHANGED trace_id
+                   /\\ refinement_map' = external_map[trace_id'][step_num']
+
+Next == \\E idx \\in DOMAIN external_map: NextInTrace(idx)
+
+Init == /\\ step_num = 1
+        /\\ trace_id \\in DOMAIN external_map
+        /\\ refinement_map = external_map[trace_id][step_num]
+
 Original == INSTANCE {specname} WITH state <- refinement_map
 
-trace_collection == {traces_tla}
 RefinementSpec == Original!Spec
 =========================================================
 '''
-        cfg_text = f'''CONSTANTS
-\texternal_map <- trace_collection
+        cfg_text = f'''
 INIT Init
 NEXT Next
 CHECK_DEADLOCK FALSE
@@ -88,7 +112,7 @@ def main():
     spec_generator = spec_gen(input_refinement_config)
     for trace in input_trace_files:
         spec_generator.add_trace_file(trace)
-    spec_generator.write_tla_module(output_spec,input_spec)
+    spec_generator.write_tla_module(output_spec, input_spec)
 
 
 if __name__ == '__main__':
