@@ -19,8 +19,8 @@ struct Logger {
     for (auto &state : collected_states) {
       std::cout << "~~";
       print_vect(state);
-    }
     std::cout << std::endl;
+    }
   }
 };
 

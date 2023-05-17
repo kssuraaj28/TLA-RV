@@ -2,21 +2,17 @@
 from sys import argv
 
 class spec_gen:
-    def __init__(self, refinement_cfg_file):
+    def __init__(self, refinement_cfg_str):
         self.refinement_vars = []
         self.rfnmnt_vars_types = {}
         self.trace_list = []
-        with open(refinement_cfg_file) as f:
-            lines = [x for x in f.read().splitlines() if not x.startswith('#')]
-            assert (len(lines) == 1)
-            cfg = lines[0]
-            for var_type in cfg.split(','):
-                var, type_str = [x.strip() for x in var_type.split(':')]
-                type_map = {'int': int, 'str': str}  # Can be extended
-                assert(var not in self.refinement_vars)
-                self.refinement_vars.append(var)
-                assert (type_str in type_map)
-                self.rfnmnt_vars_types[var] = type_map[type_str]
+        for var_type in refinement_cfg_str.split(','):
+            var, type_str = [x.strip() for x in var_type.split(':')]
+            type_map = {'int': int, 'str': str}  # Can be extended
+            assert(var not in self.refinement_vars)
+            self.refinement_vars.append(var)
+            assert (type_str in type_map)
+            self.rfnmnt_vars_types[var] = type_map[type_str]
 
     def print(self):
         print(self.refinement_vars)
@@ -85,12 +81,14 @@ PROPERTY RefinementSpec
 
 
 def main():
-    input_refinement_config = argv[1]
-    input_trace_files = argv[2:]
+    input_spec = argv[1]
+    output_spec = argv[2]
+    input_refinement_config = argv[3]
+    input_trace_files = argv[4:]
     spec_generator = spec_gen(input_refinement_config)
     for trace in input_trace_files:
         spec_generator.add_trace_file(trace)
-    spec_generator.write_tla_module('Example','ExampleSpec')
+    spec_generator.write_tla_module(output_spec,input_spec)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 ---------------------------- MODULE GCD --------------------------------
 EXTENDS Naturals
 
+\* state -- x:int,y:int 
 VARIABLES state
 
 X_val == state.x
@@ -14,5 +15,5 @@ Next == /\ Y_val # 0
 
 Init == state \in [x : Nat, y: Nat] /\ X_val > Y_val
 
-Spec == Init /\ [][Next]_state
+Spec == Init /\ [][Next]_state 
 =============================================================================

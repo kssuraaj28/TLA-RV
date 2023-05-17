@@ -1,0 +1,10 @@
+set pagination off
+
+break update_refinement
+command 1
+    printf "~~%d,%d~~\n",new_x,new_y 
+    cont
+end
+
+run 
+quit
