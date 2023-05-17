@@ -11,13 +11,14 @@ gcc GCD.c -o GCD -g
 rm -rf traces
 mkdir traces
 
+rfnment_vars=$(../get_rfnment_vars.sh GCD.tla)
 instr_cmd=../gdb-instrument/run.sh
 
 for i in {1..10} ; do
     x=$(($RANDOM+1))
     y=$(($RANDOM%x+1))
     x=$((x+1))
-    rfnment_vars=$($instr_cmd GCD.tla "traces/trace_$i" GCD $x $y)
+    $instr_cmd GCD.tla "traces/trace_$i" GCD $x $y
     echo "Collected trace $i"
 done
 

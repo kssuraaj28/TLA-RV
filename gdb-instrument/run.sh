@@ -14,8 +14,5 @@ cd "$script_dir"
 
 shift 3
 
-rfnment_vars=$(awk -F '--' '/state/ {print $NF ;exit}' $tla_file)
 
 gdb --command=gdb-instrumentation --args $executable "$@" | grep ~~ | sed s/~//g  > "$output_trace"
-
-echo $rfnment_vars
